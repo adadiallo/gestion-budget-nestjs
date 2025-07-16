@@ -11,29 +11,26 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
-    
+    ConfigModule.forRoot(), // Assure-toi que ConfigModule est bien chargé
     TypeOrmModule.forRootAsync({
-      imports:[ConfigModule],
-      useFactory:(configService:ConfigService) => ({
-         // <-- Configurer la connexion
-      type: 'postgres', // Le type de base de données
-      host: 'localhost', // L'adresse du serveur (notre Docker)
-      port: 5432, // Le port par défaut de PostgreSQL
-      username: 'adminBudget', // L'utilisateur défini dans Docker
-      password: 'passwordBudget', // Le mot de passe défini dans Docker
-      database: 'budgetapi', // Le nom de la base défini dans Docker
-      entities: [Depense,Revenu], // <-- Nous ajouterons nos entités ici plus tard
-    synchronize: configService.get<string>('NODE_ENV') !== 'production', // <-- IMPORTANT
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        type: 'postgres', // Type de base de données
+        host: configService.get<string>('DATABASE_HOST'), // Utiliser la variable d'environnement
+        port: configService.get<number>('DATABASE_PORT') || 5432, // Port de la base de données (5432 par défaut)
+        username: configService.get<string>('DATABASE_USER'), // Utiliser la variable d'environnement
+        password: configService.get<string>('DATABASE_PASSWORD'), // Utiliser la variable d'environnement
+        database: configService.get<string>('DATABASE_NAME'), // Utiliser la variable d'environnement
+        entities: [Depense, Revenu], // Liste des entités
+        synchronize: configService.get<string>('NODE_ENV') !== 'production', // Ne pas synchroniser en production
       }),
-
-       inject: [ConfigService],
-
+      inject: [ConfigService],
     }),
-    
-    BudgetsModule, RevenusModule, DepensesModule],
+    BudgetsModule,
+    RevenusModule,
+    DepensesModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {}
-
-
