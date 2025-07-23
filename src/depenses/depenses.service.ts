@@ -13,12 +13,11 @@ export class DepensesService {
   ) {}
 
   async create(createDepenseDto: CreateDepenseDto): Promise<Depense> {
-    const { id, titre, montant } = createDepenseDto;
+    const {  titre, montant } = createDepenseDto;
 
     const newDepense = this.depensesRepository.create({
       titre,
       montant,
-      id,
     });
     return this.depensesRepository.save(newDepense);
   }

@@ -13,12 +13,12 @@ export class RevenusService {
   ) {}
  
   async create(createRevenuDto: CreateRevenuDto): Promise<Revenu> {
-    const{id,titre,montant}  = createRevenuDto;
+    const{titre,montant}  = createRevenuDto;
 
     const newRevenu = this.revenusRepository.create({
         titre,
         montant,
-        id
+        
     });
     return this.revenusRepository.save(newRevenu)
 
