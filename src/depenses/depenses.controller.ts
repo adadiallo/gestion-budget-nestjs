@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  HttpCode,
+  HttpStatus,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { DepensesService } from './depenses.service';
 import { CreateDepenseDto } from './dto/create-depense.dto';
 import { UpdateDepenseDto } from './dto/update-depense.dto';
@@ -18,18 +29,21 @@ export class DepensesController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id', ParseIntPipe) id: number) {
     return this.depensesService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateDepenseDto: UpdateDepenseDto) {
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateDepenseDto: UpdateDepenseDto,
+  ) {
     return this.depensesService.update(id, updateDepenseDto);
   }
 
- @Delete(':id')
- @HttpCode(HttpStatus.NO_CONTENT)
- remove(@Param('id') id:string){
-     return this.depensesService.remove(id);
- }
+  @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.depensesService.remove(id);
+  }
 }

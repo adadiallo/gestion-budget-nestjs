@@ -1,9 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+
 import { CreateDepenseDto } from './dto/create-depense.dto';
 import { UpdateDepenseDto } from './dto/update-depense.dto';
-import { InjectRepository } from '@nestjs/typeorm';
 import { Depense } from './entities/depense.entity';
-import { Repository } from 'typeorm';
 
 @Injectable()
 export class DepensesService {
@@ -13,51 +14,45 @@ export class DepensesService {
   ) {}
 
   async create(createDepenseDto: CreateDepenseDto): Promise<Depense> {
-    const {  titre, montant } = createDepenseDto;
-
-    const newDepense = this.depensesRepository.create({
-      titre,
-      montant,
-    });
-    return this.depensesRepository.save(newDepense);
+    try {
+      const { titre, montant } = createDepenseDto;
+      const newDepense = this.depensesRepository.create({ titre, montant });
+      return await this.depensesRepository.save(newDepense);
+    } catch (error) {
+      console.error('Erreur lors de la création de la dépense :', error);
+      throw error;
+    }
   }
 
   async findAll(): Promise<Depense[]> {
     return this.depensesRepository.find();
   }
 
-  async findOne(id: string): Promise<Depense> {
+  async findOne(id: number): Promise<Depense> {
     const depense = await this.depensesRepository.findOne({
       where: { id },
     });
     if (!depense) {
-      throw new NotFoundException(
-        `Depense avec l'ID ${id} n'a pas été trouvé.`,
-      );
+      throw new NotFoundException(`Dépense avec l'ID ${id} non trouvée.`);
     }
     return depense;
   }
 
-  async update(
-    id: string,
-    updateDepenseDto: UpdateDepenseDto,
-  ): Promise<Depense> {
+  async update(id: number, updateDepenseDto: UpdateDepenseDto): Promise<Depense> {
     const depenseToUpdate = await this.depensesRepository.preload({
-      id: id,
+      id,
       ...updateDepenseDto,
     });
     if (!depenseToUpdate) {
-      throw new NotFoundException(`Depense avec l'ID ${id} n'a pas ete trouve`);
+      throw new NotFoundException(`Dépense avec l'ID ${id} non trouvée.`);
     }
     return this.depensesRepository.save(depenseToUpdate);
   }
 
-  async remove(id: string): Promise<void> {
+  async remove(id: number): Promise<void> {
     const result = await this.depensesRepository.delete(id);
     if (result.affected === 0) {
-      throw new NotFoundException(
-        `Depense avec l'ID ${id} n'a pas été trouvé.`,
-      );
+      throw new NotFoundException(`Dépense avec l'ID ${id} non trouvée.`);
     }
   }
 }

@@ -4,7 +4,7 @@ import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 export class Depense {
     @PrimaryGeneratedColumn()
-    id:string;
+    id:number;
     @Column()
     titre:string
     @Column()
