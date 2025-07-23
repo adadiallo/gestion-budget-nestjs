@@ -11,29 +11,33 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
-    
-    TypeOrmModule.forRootAsync({
-      imports:[ConfigModule],
-      useFactory:(configService:ConfigService) => ({
-         // <-- Configurer la connexion
-      type: 'postgres', // Le type de base de données
-      host:configService.get<string>( 'DATABASE_HOST'), // L'adresse du serveur (notre Docker)
-      port: configService.get<number>('DATABASE_PORT'), // Le port par défaut de PostgreSQL
-      username:configService.get<string>( 'DATABASE_USER'), // L'utilisateur défini dans Docker
-      password: configService.get<string>('DATABASE_PASSWORD'), // Le mot de passe défini dans Docker
-      database: configService.get<string>('DATABASE_NAME'), // Le nom de la base défini dans Docker
-      entities: [Depense,Revenu], // <-- Nous ajouterons nos entités ici plus tard
-    synchronize: configService.get<string>('NODE_ENV') !== 'production', // <-- IMPORTANT
-      }),
-
-       inject: [ConfigService],
-
+    // 🔧 Chargement des variables .env
+    ConfigModule.forRoot({
+      isGlobal: true, // 👈 rend disponible dans toute l'application
     }),
-    
-    BudgetsModule, RevenusModule, DepensesModule],
+
+    // ⚙️ Connexion à la base PostgreSQL
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        type: 'postgres',
+        host: configService.get<string>('DATABASE_HOST'),
+        port: configService.get<number>('DATABASE_PORT'),
+        username: configService.get<string>('DATABASE_USER'),
+        password: configService.get<string>('DATABASE_PASSWORD'),
+        database: configService.get<string>('DATABASE_NAME'),
+        entities: [Depense, Revenu],
+        synchronize: configService.get<string>('NODE_ENV') !== 'production',
+      }),
+      inject: [ConfigService],
+    }),
+
+    // 📦 Modules de ton app
+    BudgetsModule,
+    RevenusModule,
+    DepensesModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {}
-
-
