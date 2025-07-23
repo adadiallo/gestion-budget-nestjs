@@ -17,11 +17,11 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       useFactory:(configService:ConfigService) => ({
          // <-- Configurer la connexion
       type: 'postgres', // Le type de base de données
-      host:configService.get<string>( 'localhost'), // L'adresse du serveur (notre Docker)
-      port: configService.get<number>('5432'), // Le port par défaut de PostgreSQL
-      username:configService.get<string>( 'adminBudget'), // L'utilisateur défini dans Docker
-      password: configService.get<string>('passwordBudget'), // Le mot de passe défini dans Docker
-      database: configService.get<string>('budgetapi'), // Le nom de la base défini dans Docker
+      host:configService.get<string>( 'DATABASE_HOST'), // L'adresse du serveur (notre Docker)
+      port: configService.get<number>('DATABASE_PORT'), // Le port par défaut de PostgreSQL
+      username:configService.get<string>( 'DATABASE_USER'), // L'utilisateur défini dans Docker
+      password: configService.get<string>('DATABASE_PASSWORD'), // Le mot de passe défini dans Docker
+      database: configService.get<string>('DATABASE_NAME'), // Le nom de la base défini dans Docker
       entities: [Depense,Revenu], // <-- Nous ajouterons nos entités ici plus tard
     synchronize: configService.get<string>('NODE_ENV') !== 'production', // <-- IMPORTANT
       }),
