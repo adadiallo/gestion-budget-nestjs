@@ -15,14 +15,13 @@ export class DepensesService {
 
   async create(createDepenseDto: CreateDepenseDto): Promise<Depense> {
     try {
-      const { titre, montant } = createDepenseDto;
-      const newDepense = this.depensesRepository.create({ titre, montant });
-      return await this.depensesRepository.save(newDepense);
-    } catch (error) {
-      console.error('Erreur lors de la création de la dépense :', error);
-      throw error;
-    }
+    const newDepense = this.depensesRepository.create(createDepenseDto);
+    return await this.depensesRepository.save(newDepense);
+  } catch (error) {
+    console.error('❌ ERREUR CREATE DEPENSE:', error);
+    throw error;
   }
+}
 
   async findAll(): Promise<Depense[]> {
     return this.depensesRepository.find();
